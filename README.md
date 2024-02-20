@@ -10,7 +10,7 @@ Author:	Don K. Harrison
 
 ### The Project
 
-This project is the work of @FinnJorgensen, @sergioag and @640-KB to reconstruct MEGA-BIOS V1.0 from the printed source code originally sold by DTC.
+This project is the work of @FinnJorgensen, @sergioag and @640-KB to reconstruct MEGA-BIOS V1.0 from the [printed source code listing](https://theretroweb.com/motherboard/manual/dtc-mega-bios-listing-65a16bd9ed44e544310124.pdf) originally sold by DTC.
 
 More information about DTC, MEGA-BIOS and it's legacy can be found [here](https://forum.vcfed.org/index.php?threads/display-telecommunications-corporation-megaboard.63853/) and [here](https://forum.vcfed.org/index.php?threads/anonymous-has-been-found.1246341/).
 
