@@ -107,7 +107,7 @@ DMAWriteMode    Equ     01001010B             ;Channel 2 write normal
 ;		**************
 
 FDCReadCMD      Equ     11100110B             ;Read command
-FDCWriteCMD     Equ     11000101B             ;Hrite command
+FDCWriteCMD     Equ     11000101B             ;Write command
 FDCFormatCMD    Equ     01001101B             ;Format command
 FDCRecalCMD     Equ     00000111B             ;Recalibrate command
 FDCSpecifyCMD   Equ     00000011B             ;Specify command (timers)
@@ -223,13 +223,13 @@ FloppyDriver    Proc    Far
 
 		;       Dissolve stack frame
 
-		Pop     Bx                      ;Pop Ah, Al (Cad & #Sectors)
-		Pop     Cx                      ;Pop TK & DVE
-		Pop     Dx                      ;Pop SEC# & HD
+		Pop     Bx                      ;Pop Ah, Al (Cmd & #Sectors)
+		Pop     Cx                      ;Pop TK# & DV&
+		Pop     Dx                      ;Pop SEC# & HD#
 		Xchg    Dl,Cl                   ;Restore back to
 		Xchg    Cl,Dh                   ;...calling convention
 		Pop     Bx                      ;Pop EOT & SEC SIZE
-		Pop     Bx                      ;Pop DIL & GAP
+		Pop     Bx                      ;Pop DTL & GAP
 		Pop     Bx                      ;Restore DMA offset pointer
 		Pop     Es                      ;Restore DMA segment pointer
 		Pop     Ds                      ;Restore data sequent pointer
@@ -426,7 +426,7 @@ DiskIO          Proc    Near
 
 		Xchg    Al,Ah                   ;Restore count in Ax
 		Add     Ax,Dx                   ;Set carry if crossing 64k
-		Jnc     NoCrossing              ;...and Jump if so
+		Jnc     NoCrossing              ;...and jump if so
 
 		;	Crossed 64k,Error return
 
@@ -445,7 +445,7 @@ NoCrossing:
 		;	Calculate Drive Bit from Drive Number
 
 		Mov     Bl,DriveNumber          ;Get drive number in
-		Xor     Bh,Bh                   ;...BX
+		Xor     Bh,Bh                   ;...Bx
 		Mov     Al,Table.Bit[Bx]        ;...and calculate bit number
 		Mov     Ch,Al                   ;...Save in ch for seek
 
@@ -459,7 +459,7 @@ NoCrossing:
 		Shl     Al,Cl                   ;...upper nibble
 		Or      Al,Bl                   ;...then or in drive number
 		Or      Al,00001100B            ;Add enable and not reset
-		Mov     Dx,PortFDCAdptMode      ;...point at adapter 1/0 port
+		Mov     Dx,PortFDCAdptMode      ;...point at adapter I/0 port
 		Out     Dx,Al                   ;...and output the data
 
 		;	Restore interrupts from DMA section above
@@ -536,7 +536,7 @@ MSTimerDone:
 
 		Mov     Al,SectorSize           ;FDC "N" parameter
 		Call    FDCOut                  ;...Send it out
-		Mov     Al,EOT                  ;FDC “SC" parameter
+		Mov     Al,EOT                  ;FDC "SC" parameter
 		Call    FDCOut                  ;...Send it out
 		Mov     Al,FormatGap            ;FDC "GPL" parameter
 		Call    FDCOut                  ;...Send it out
@@ -594,7 +594,7 @@ OperationOk:
 		Mov     Al,FDCStatus[3]         ;Get track we ended up on
 		Cmp     Al,TrackNumber          ;...compare it to starting tk
 		Mov     Al,FDCStatus[5]         ;...get last sector
-		Je      OnSameTrack             ;...jump if didn’t roll over
+		Je      OnSameTrack             ;...jump if didn't roll over
 		Mov     Al,EOT                  ;Get last track
 		Inc     Al                      ;...plus 1 into Al
 OnSameTrack:
@@ -638,13 +638,13 @@ WaitForInt      Endp
 
 FDCIn           Proc    Near
 		Push    Cx                      ;Save Cx
-		Xor     Cx,Cx                   ;Maxigum timeout
+		Xor     Cx,Cx                   ;Maximum timeout
 		Mov     Dx,PortFDCStatus        ;Pointer to FDC Status port
 FDCInLoop1:
 		In      Al,Dx                   ;Get status
 		Or      Al,Al                   ;Affect flags
 		Js      MasterReady             ;If upper bit set, jump
-		Loop    FDCInLoop1              ;Loop till master set or 7.0.
+		Loop    FDCInLoop1              ;Loop till master set or T.O.
 		Mov     DisketteStat,TimeOutStat;FDC did not respond, error
 		Jmp     Short FDCInRtn          ;...return
 MasterReady:
@@ -748,7 +748,7 @@ FDCOutLoop1:
 		Jmp     Short OutErrRtn         ;...jump and return error
 OutMasterRdy:
 		Test    Al,01000000B            ;Correct direction?
-		Jz      OutCorrectDir           ;...jump   if so
+		Jz      OutCorrectDir           ;...jump if so
 		Mov     DisketteStat,BadFDCStat ;...else chip is bad, error out
 		Jmp	Short OutErrRtn		;...jump and return error
 OutCorrectDir:

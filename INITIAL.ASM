@@ -15,12 +15,12 @@ Name Initial
 ;	The Initialization module serves to initialize the system
 ;    on power up, or during a keyboard or manual reset. Initialization
 ;    occurs for the system board peripherals and all attached option
-;    adapters. Global memory location values are initialized by this module.
+;    adapters.  Global memory location values are initialized by this module.
 
 
 
 ;		(c) Display Telecommunications Corporation, 1983
-;			All Rights Reserved
+;			  All Rights Reserved
 
 $Eject
 
@@ -354,14 +354,14 @@ ClearLoop:
 		Mov	Cx,02000H		;Count 8K Words, or
 	Rep	Stosw				;...16K bytes to write zeros
 
-		Add	Bh,4			;Bump to next 16K segaent
+		Add	Bh,4			;Bump to next 16K segment
 		Cmp	Bh,0A0H			;...is it last one?
-		Jne	ClearLoop		;...if not,loop,else done
+		Jne	ClearLoop		;...if not, loop, else done
 TopFound:
 		Mov	ResetFlag,Si		;Put warm boot flag back after
 						;...clearing memory
 
-		;	Perform memory test on first 2K,regardless of warmth
+		;	Perform memory test on first 2K, regardless of warmth
 
 		Xor	Ax,Ax			;Segment starts at 0
 		Mov	Es,Ax			;...load Es
@@ -370,7 +370,7 @@ TopFound:
 		Mov	Sp,Offset StackTop	;...stack pointer
 		Push	Bp			;Save error from refresh test
 		Push	Bx			;Save Memory Size
-		Mov	Bp,2			;Count = 2k
+		Mov	Bp,2			;Count = 2K
 		Call	MemoryTest		;Go test memory
 		Pop	Ax			;Restore Memory Size
 		Mov	Cl,6			;Convert from # of 64K's
@@ -413,7 +413,7 @@ BiosRomOk:
 
 		Cli				;Insure interrupts off
 		Mov	Al,00010011B		;Edge trig, 4 byte vector,
-		Out	PortPICICw1,Al		;...single,ICW4 needed
+		Out	PortPICICw1,Al		;...single, ICW4 needed
 		Mov	Al,8			;Address 8
 		Out	PortPICICW2,Al		;...to start vectors
 		Mov	Al,00001001B		;Buffered mode,
@@ -457,7 +457,7 @@ BasicCkLoop:
 		Dec	Ah			;...count - 1
 		Jnz	BasicCkLoop		;...loop till done
 		Pop	Ds			;Restore data segment register
-		Assume	Ds:BiosDataArea		;...and informs ASM86
+		Assume	Ds:BiosDataArea		;...and inform ASM86
 		Mov	Di,Offset BasicTrapAddr ;Point at basic trap address
 		Mov	Ax,Offset Basic		;Offset = 0
 		Stosw				;...store it
@@ -516,7 +516,7 @@ NoBasic:
 		Shl	Al,Cl			;...into upper nibble
 		Or	Al,Ah			;...and OR with lower switches
 		Mov	Ah,0			;Store configuration
-		Mov	EquipFlag,Ax		;...Word (upper byte = 0)
+		Mov	EquipFlag,Ax		;...word (upper byte = 0)
 		And	Al,00110000B		;Isolate display bits
 		Jnz	DisplayExistsJmp	;...and jump if display exists
 		Mov	Ax,Offset NullReturn	;Get offset of null int return
@@ -629,7 +629,7 @@ NoGameCard:
 		Je	NoMemTest		;...and jump if warm
 		Call	SysMemTest		;...else do a memory test
 NoMemTest:
-		;	Initialize Expansion Modules,if Present
+		;	Initialize Expansion Modules, if Present
 
 		Mov	Dx,IOROMSeg		;2K ROMs from C0000 to F6000
 		Assume 	Ds:Nothing
@@ -780,7 +780,7 @@ ColorMon:
 
 		;	Test system memory
 
-		Mov	Bp,MemorySize		;Get # of ik Blocks in mem
+		Mov	Bp,MemorySize		;Get # of 1k Blocks in mem
 		Dec	Bp			;...leave the first one alone
 		Dec	Bp			;...and the second one
 		Push	Ds			;Save data segment
@@ -815,7 +815,7 @@ TestVidMem:
 		Add	Dx,4			;...active
 		Out	Dx,Al			;...video card
 		Pop	Bp			;Length in 1K blocks
-		Pop	Es			;...Segment of video memory
+		Pop	Es			;...segment of video memory
 OuterVidLoop:
 		Call	MemoryTest		;...do the test
 		Dec	Bp			;Bp has count

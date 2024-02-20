@@ -373,7 +373,7 @@ $List
 ;	Align next to Keyboard Driver
 Org	0E987H - (Size(LevelOneStruc) + Size(LevelTwoStruc) + Size(PadStruc))
 
-;$Nolist
+$Nolist
 
 LevelOneTable	LevelOneStruc <>	;
 LevelTwoTable	LevelTwoStruc <>	;
@@ -389,7 +389,7 @@ $Eject
 
 		Assume Cs:Bios, Ds:BiosDataArea
 
-		Org	0E987H			;Align with Pe and Xt
+		Org	0E987H			;Align with Pc and Xt
 
 KeyboardHdwrInt Proc	Far
 		Sti				;Restore interrupts
@@ -543,7 +543,7 @@ KeyContinue4:
 		Test	KeyboardFlag1,ControlBit	;Control?
 		Jnz	ControlState		;...Yes, jump, else test shift
 		Test	KeyboardFlag1,LeftShiftBit Or RightShiftBit
-		Jnz	ShiftStateShort		;...yes, jump
+		Jnz	ShiftStateShort		;...Yes, jump
 		Jmp	BaseCaseState		;No shift state active
 ShiftStateShort:
 		Jmp	ShiftState		;Convert to near jump
@@ -610,7 +610,7 @@ CtlBufLoad:
 
 		;	Else process normal control key
 KeyContinue7:
-		Cmp	Al,ControlZ		;Is Level 1 (= Control 2?
+		Cmp	Al,ControlZ		;Is Level 1 <= Control 2?
 		Jbe	CtlBufLoad		;...return level 1 val. if so
 		Mov	Bx,Offset LevelTwoTable.ControlCase  ;Load level 2
 		Sub	Al,20H			;Remove level two char offset
@@ -635,7 +635,7 @@ KeyContinue6:
 		Cmp	Al,ControlZ		;Is Level 1 <= Control 72?
 		Ja	ShiftNotAZ		;...jump if not and continue
 		Add	Al,40H			;...else return extended
-		Jmp	KeyBufLoad		;...Al = L1+40H Ah = Scan
+		Jmp	KeyBufLoad		;...Al = L1+40H  Ah = Scan
 ShiftNotAZ:
 		Mov	Bx,Offset LevelTwoTable.UpperCase  ;Load level 2
 		Sub	Al,20H			;Remove level two char offset
@@ -650,7 +650,7 @@ BaseCaseState:
 		Cmp	Al,ControlZ		;Is Level 1 <= Control Z?
 		Ja	BaseNotAz		;...jump if not and continue
 		Add	Al,60H			;...else return extended
-		Jmp	KeyBufLoad		;...Al = LI+60H Ah = Scan
+		Jmp	KeyBufLoad		;...Al = LI+60H  Ah = Scan
 BaseNotAZ:
 		Mov	Bx,Offset LevelTwoTable.LowerCase ;Load level 2
 		Sub	Al,20H			;Remove level two char offset
@@ -694,7 +694,7 @@ PadALTState:
 KeyPadCont2:
 		Mov	Bx,Offset PadTable.Shift  ;Point at numeric translation
 		Xlat	Cs:ByteType		;Translate from table
-		Cmp	Al,'0'			;Test if ( @ (.+)
+		Cmp	Al,'0'			;Test if < 0 (.+-)
 		Jb	PadReturn		;...and return null if it is
 		Sub	Al,'0'			;...else remove ascii offset
 		Mov	Bl,Al			;Free up accumulator
@@ -743,7 +743,7 @@ $Eject
 ;		**************************
 
 	;	Upon entry, Al = ASCII code from table, Ah = scan code
-	;	Entry one, KeyBufLoad, will perform a Final translation
+	;	Entry one, KeyBufLoad, will perform a final translation
 	;	if the value in Al is between 0 and 4, 80 will be added.
 	;
 	;	Entry two, KeyBufLoad2, will not perform this translation.
@@ -756,7 +756,7 @@ $Eject
 KeyBufLoad:
 		Cmp	Al,5			;No value?
 		Je	BufLoadReturn		;...return and ignore
-		Cmp	Al,4			;Is value (= 4?
+		Cmp	Al,4			;Is value <= 4?
 		Ja	BufNotSpcl		;...jump if not
 		Or	Al,10000000B		;Turn on upper bit
 		Jmp	Short BufContinue	;...and continue below
@@ -833,12 +833,12 @@ BeepHalfCycle:
 BeepLoop:
 		Loop	BeepLoop		;...loop for half a cycle
 		Xor	Al,00000010B		;Turn on speaker
-		Out	PortPPIPortB,Al		;...Speaker data
+		Out	PortPPIPortB,Al		;...speaker data
 		Test	Al,00000010B		;Is this second pass?
 		Jz	BeepHalfCycle		;...loop if not
 		Dec	Bx			;Decrement cycle count
 		Jnz	BeepCycle		;...and cycle till done
-		Pop	Ax			;Restore port value
+		Pop	Ax			;Restore B port value
 		Out	PortPPIPortB,Al		;...from stack and output it
 		Mov	Cx,50			;Pause at end of beep
 PauseBeep:

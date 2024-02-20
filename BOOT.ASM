@@ -13,7 +13,7 @@ Name Boot
 ;		*  Module Description  *
 ;		************************
 
-;	  This module is called by interrupt 19 (TrapBoot).
+;	   This module is called by interrupt 19 (TrapBoot).
 ;    It's function is to read in the boot image from the diskette
 ;    and transfer control to it.
 

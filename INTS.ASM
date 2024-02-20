@@ -81,7 +81,7 @@ PrinterHdwrTrapAddr	Dd	1 Dup (?)	;Printer interrupt
 
 			;	Driver entry points
 VideoTrapAddr		Dd	1 Dup (?)	;Video trap vector
-EquipTrapAddr		Dd	1 Dup (?)	;Equipsent query vector
+EquipTrapAddr		Dd	1 Dup (?)	;Equipment query vector
 MemorySizeTrapAddr	Dd	1 Dup (?)	;Memory size query vector
 FloppyTrapAddr		Dd	1 Dup (?)	;Diskette vector
 CommsTrapAddr		Dd	1 Dup (?)	;Serial interface vector
@@ -120,9 +120,9 @@ Bios		Segment Common
 		Extrn	PrintMessage:Near, Beep:Near, TimerHdwrInt:Far
 		Extrn	KeyboardHdwrInt:Far, FloppyHdwrInt :Far
 		Extrn	VideoDriver:Far, EquipDriver:Far
-		Extrn	MemorySizeDriver:Far, FloppyDriver:Far, CommsDriver:Far
-		Extrn	CassetteDriver:Far, KeyboardDriver:Far, PrinterDriver:Far
-		Extrn	BootDriver:Far, TODDriver:Far, VidParamsPointer:Byte
+		Extrn	MemorySizeDriver:Far,FloppyDriver:Far, CommsDriver:Far
+		Extrn	CassetteDriver:Far,KeyboardDriver:Far, PrinterDriver:Far
+		Extrn	BootDriver:Far,TODDriver:Far, VidParamsPointer:Byte
 		Extrn	FloppyParamsPointer:Byte, ResetEntry:Far, PorEntry:Far
 		Extrn	VideoInit:Near, ClearScreen:Near, PositionCursor:Near
 
@@ -165,9 +165,9 @@ NMIOccurred:
 
 		Mov	Dx,PortNMIMask		;Point at parity controls
 		Mov	Al,NMIMask		;Disable NMI's
-		Out	PortNMIMask,Al		;...from causing further err’s
-		Mov	Dx,PortPPIPortB		;Point at port
-		In	Al,Dx			;Get pra controls
+		Out	PortNMIMask,Al		;...from causing further err's
+		Mov	Dx,PortPPIPortB		;Point at port B
+		In	Al,Dx			;Get parity controls
 		Or	Al,00110000B		;Set them Hi
 		Out	Dx,Al			;...clearing F/Fs
 		And	Al,11001111B		;Set them Lo
@@ -179,8 +179,8 @@ NMIOccurred:
 
 		;	Setup Pointers
 
-		Xor	Ax,Ax			;Start aragraph pointer at @
-		Mov	Ds,Ax			;feeeto tes
+		Xor	Ax,Ax			;Start aragraph pointer at 0
+		Mov	Ds,Ax			;...to test
 ParagraphLoop:	
 		Mov	Cx,16			;Number of bytes in a paragraph
 		Xor	Si,Si			;First byte in paragraph
@@ -192,7 +192,7 @@ ByteLoop:
 		Inc	Si			;Increment byte pointer
 		Loop	ByteLoop		;...else loop through paragraph
 		Mov	Ax,Ds			;Get paragraph value
-		Inc	Ax			;...ineremen it
+		Inc	Ax			;...increment it
 		Mov	Ds,Ax			;...and
 		Cmp	Ax,Bx			;...compare it to end
 		Jne	ParagraphLoop		;...and loop till all done
@@ -263,7 +263,7 @@ $Eject
 
 RomVectors	Label	DWord
 
-		;	Hardware interrupts
+	;	Hardware interrupts
 
 		Dw	TimerHdwrInt		;Timer interrupt
 		Dw	KeyboardHdwrInt		;Keyboard interrupt
@@ -337,7 +337,7 @@ IllegalInt	Endp
 
 		Org	0FF53H			;Align with Xt and Pc
 DummyReturn:
-		Iret				;Return found in Pe and Xt
+		Iret				;Return found in Pc and Xt
 
 Bios		Ends
 

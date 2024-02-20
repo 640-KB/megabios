@@ -42,7 +42,7 @@ $Eject
 		Public StackTop
 
 ;		*******************
-;		*  Stack Segeent  *
+;		*  Stack Segment  *
 ;		*******************
 
 BiosStack	Segment	Public

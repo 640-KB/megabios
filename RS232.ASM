@@ -12,7 +12,7 @@ Name RS232
 ;		*  Module Description  *
 ;		************************
 
-;		This module contains the serial interface driver.	The driver
+;	    This module contains the serial interface driver.  The driver
 ;	is entered via interrupt 20 (TrapSIODriver).
 
 

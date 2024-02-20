@@ -13,7 +13,7 @@ Name Printer
 ;		************************
 ;
 ;	This module handles the parallel printer driver, accessed via
-;	interrupt 17H,
+;	interrupt 17H.
 
 
 
@@ -77,7 +77,7 @@ PrinterDriver	Proc	Far
 		Push	Ds			;Save registers
 		Push	Bx			;...that
 		Push	Cx			;...we
-		Push	Dx			;...Will use
+		Push	Dx			;...will use
 		Mov	Bx,BiosDataArea		;Point at our
 		Mov	Ds,Bx			;...data sequent
 		Mov	Bx,Dx			;Use Bx as index of ports
@@ -92,7 +92,7 @@ PrinterDriver	Proc	Far
 		Jz	PrintChar		;...if so, Jump and print char
 		Dec	Ah			;Case = 1?
 		Jz	PrintInitialize		;...if so, init printer
-		Dec	Ah			;Case = Fa)
+		Dec	Ah			;Case = 2?
 		Jz	PrintStatus		;...if so, jump and return status
 
 		;	If illegal command, just return
@@ -169,7 +169,7 @@ PrintInitialize Proc	Near
 		Inc	Dx			;...port
 		Mov	Al,00001000B		;Init bit
 		Out	Dx,Al			;...to printer
-		Mov	Cx,1500		;Delay
+		Mov	Cx,1500			;Delay
 InitDelay:
 		Loop	InitDelay		;...for reset pulse
 		Jmp	StatusReturn3		;...then pus and turn off

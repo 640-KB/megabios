@@ -12,14 +12,14 @@ Name Video
 ;		*  Module Description  *
 ;		************************
 ;
-;	This module,accessed via interrupt 10H,handles both alpha
-;   and graphics video modes of either type viceo interface card.
+;	This module, accessed via interrupt 10H, handles both alpha
+;   and graphics video modes of either type video interface card.
 
 
 
 
 
-;		   (c) Display Telecommunications Corporation,1983
+;	(c) Display Telecommunications Corporation,1983
 ;			All Rights Reserved
 
 $Eject
@@ -41,7 +41,7 @@ $Eject
 ;		*  Public Symbols  *
 ;		********************
 
-		Public VideoDriver,VidParamsPointer
+		Public VideoDriver, VidParamsPointer
 
 
 
@@ -62,7 +62,7 @@ $Eject
 ;		*******************
 
 IntSegment	Segment Public
-		Extrn	VidParamsTrapAddr:DWord,VideoGraphicsTrapAddr:DWord
+		Extrn	VidParamsTrapAddr:DWord, VideoGraphicsTrapAddr:DWord
 IntSegment	Ends
 
 BiosDataArea	Segment Public
@@ -117,13 +117,13 @@ SetCol		Equ	Byte Ptr [Bp+8]		;Set curs- column
 SetRowCol	Equ	Word Ptr [Bp+8]		;Set curs -row and column
 ReadRow		Equ	Byte Ptr [Bp+9]		;Read curs- row
 ReadCol		Equ	Byte Ptr [Bp+8]		;Read curs- column
-ReadRowCol	Equ	Word Ptr [Bp+8]		;Read curs -row anc coluan
+ReadRowCol	Equ	Word Ptr [Bp+8]		;Read curs -row and column
 ReturnCursMode	Equ	Word Ptr [Bp+6]		;Read curs -current cursor mode
 LpRow		Equ	Byte Ptr [Bp+9]		;Read Lp - row
 LpCol		Equ	Byte Ptr [Bp+8]		;Read Lp - col
 LpRowCol	Equ	Word Ptr [Bp+8]		;Read Lp - row and column
 LpRasterLine	Equ	Byte Ptr [Bp+7]		;Read Lp - Raster line
-LpPixel		Equ	Word Ptr [Bp+4]		;Read Lp - Pinel #
+LpPixel		Equ	Word Ptr [Bp+4]		;Read Lp - Pixel #
 LpStatus	Equ	Byte Ptr [Bp+3]		;Read Lp - Exit status
 NewPage		Equ	Byte Ptr [Bp+2]		;Sel Active - new active page
 ScrollNumRows	Equ	Byte Ptr [Bp+2]		;Scroll - # of rows to blank
@@ -167,12 +167,12 @@ JumpTable	Label	Word
 		Dw	Offset	ReadLpPos	;Read Light pen position
 		Dw	Offset	ActivatePage	;Activate new page
 		Dw	Offset	Scroll		;Scroll UP
-		Dw	Offset	Scroll		;Scrol] DOWN
+		Dw	Offset	Scroll		;Scroll DOWN
 		Dw	Offset	ReadWrite	;Read char and attrib at cursor
 		Dw	Offset	ReadWrite	;Write char and attrib at cursor
 		Dw	Offset	ReadWrite	;Write char at cursor
 		Dw	Offset	SetColor	;Set color and background
-		Dw	Offset	WriteDot	;Whrite a dot
+		Dw	Offset	WriteDot	;Write a dot
 		Dw	Offset	ReadDot		;Read a dot
 		Dw	Offset	WriteTTY	;Write glass tty
 		Dw	Offset	VideoState	;Return current video state
@@ -250,8 +250,8 @@ ParamOffStruc	Struc
 ParamOffStruc	Ends
 		;	Table definition - done under $NoList
 
-$Nolist
 		Org	0F0A4H			;Align with PC and Xt
+$Nolist
 VidParamsPointer	ParameterStruc <>
 
 		Org	0F0FCH
@@ -325,7 +325,7 @@ SetModeJump1:
 		;	Ah is 6845 index, initialized to zero from above
 PumpModeLoop:
 		Mov	Al,Es:[Si]		;Get byte from table
-		Call	Load6845		;...5end it
+		Call	Load6845		;...send it
 		Inc	Ah			;Increment 6845 index
 		Inc	Si			;Increment memory pointer
 		Loop	PumpModeLoop		;...and loop till 16 done
@@ -352,16 +352,16 @@ SetModeClr3:
 
 		Mov	Dx,ActiveCard		;Get port address
 		Add	Dl,4			;...and point at mode port
-		Pop	Bx			;Get CrtMode from stac
+		Pop	Bx			;Get CrtMode from stack
 		Mov	Al,VidParamsPointer.ModeSets[Bx] ;Get mode from table
 		Out	Dx,Al			;...........and output it
-		Mov	CrtModeSet,Al		;...........and Seg global
+		Mov	CrtModeSet,Al		;...........and seg global
 
 		;	Set overscan mode
 
 		Inc	Dx			;Point at register
 		Mov	Al,00110000B		;Default value
-		Cmp	Bl,6			;640x208 mode
+		Cmp	Bl,6			;640x200 mode
 		Jne	OverscanHires		;...jump if is
 		Mov	Al,00111111B		;...else set special mode
 OverscanHires:
@@ -406,8 +406,8 @@ SetCursorType	Endp
 ;		*****************************************
 
 SetCursorPos	Proc	Near			;Move cursor to position
-		Mov	Bl,DisplayPage		;Get page arameter
-		Shl	Bl,1			;...Multiply by 2
+		Mov	Bl,DisplayPage		;Get page parameter
+		Shl	Bl,1			;...multiply by 2
 		Xor	Bh,Bh			;Clear the top
 		Mov	Ax,SetRowCol		;Get new row and column
 		Mov	CursorPosn[Bx],Ax	;...and store it
@@ -424,9 +424,9 @@ SetCursorPos	Endp
 
 ReadCursorPos	Proc	Near			;Read current cursor position
 		Mov	Bl,DisplayPage		;Get page Gatauser
-		Shl	Bl,1			;...Multiply by 2
+		Shl	Bl,1			;...multiply by 2
 		Xor	Bh,Bh			;Clear the top
-		Mov	Ax,CursorPosn[Bx]	;jGet cursor position
+		Mov	Ax,CursorPosn[Bx]	;Get cursor position
 		Mov	ReadRowCol,Ax		;...and store it in stack frame
 		Mov	Ax,CursorMode		;Get cursor mode
 		Mov	ReturnCursMode,Ax	;...and store it in stack frame
@@ -466,7 +466,7 @@ LpPosJmp2:
 
 		;	Graphics Light Pen
 
-		Mov	Ch,40			;Divide into 48 columns
+		Mov	Ch,40			;Divide into 40 columns
 		Div	Dl			;...per row
 
 		;	Al=0-99 rows	Ah=0-39 columns
@@ -474,7 +474,7 @@ LpPosJmp2:
 		Mov	Bl,Ah			;Return pixels in Bx
 		Xor	Bh,Bh			;...calculated as 8
 		Mov	Cl,3			;...times
-		Shl	Bx,Cl			;...Column value
+		Shl	Bx,Cl			;...column value
 		Mov	Ch,Al			;Scan line in Ch
 		Shl	Ch,1			;...double for interlace
 		Mov	Dl,Ah			;Char coluan in Dl
@@ -533,7 +533,7 @@ ActivatePage	Proc	Near			;Activate new page
 		Shr	Ax,1			;Get character only length
 		Mov	Cx,Ax			;Pump it into
 		Mov	Ah,12			;...6845
-		Call	Load6845Double		;...Double register 12
+		Call	Load6845Double		;...double register 12
 		Pop	Bx			;Restore page to Bx
 		Call	LoadCursor		;...and go load the cursor
 		Ret				;...then return
@@ -546,7 +546,7 @@ $Eject
 Scroll		Proc	Near			;Scroll Down
 		Call	WhichMode		;Graphics or Alpha?
 		Jnc	ScrollAlpha		;...jump if alpha
-		Jmp	ScrollGraph		;..-0150 jump to graphics
+		Jmp	ScrollGraph		;...else jump to graphics
 Scroll		Endp
 
 ;		***********************************
@@ -724,15 +724,15 @@ DownSkip1:
 		Push	Bx			;Save num scan lines for blank
 		Sub	Dh,Bl			;Calculate # scans to move
 		Mov	Al,80			;Calc by multiplying # scans
-		Mul	Bl			;...times 88 bytes per scan
+		Mul	Bl			;...times 80 bytes per scan
 
 		;	Set sign of offsets based on direction
 
-		Mov	Bx,2000H-80		;Pre-load *UP® row offset
+		Mov	Bx,2000H-80		;Pre-load 'UP' row offset
 		Cmp	Command,6		;Up?
 		Je	ScrollGrph1		;...jump if up
 		Neg	Ax			;...else make Ax negative
-		Mov	Bx,2000H+80		;Scroll down goes up in menory
+		Mov	Bx,2000H+80		;Scroll down goes up in memory
 		Std				;Set direction
 ScrollGrph1:
 		;	Set to / from offset
@@ -820,7 +820,7 @@ ReadWrite	Proc	Near
 		Call	ConvertCursor		;Convert cursor to linear
 		Mov	Di,Ax			;Save result in Di
 		Pop	Ax			;Restore page #
-		Mul	CrtLength		;...Multiply page x length
+		Mul	CrtLength		;...multiply page x length
 		Add	Di,Ax			;...and add in converted value
 		Mov	Si,Di			;Read and write pointers
 
@@ -857,7 +857,7 @@ HWaitRead2:
 ;		Jz	HWaitRead2		;...wait till it does (BUGFIX)
 		Lodsw				;...read it quick
 		Pop	Ds			;Restore Ds
-		Assume 	Ds:BiosDataArea		;...and tell ASMBS
+		Assume 	Ds:BiosDataArea		;...and tell ASM86
 		Mov	Char,Al			;...store char for return
 		Mov	AttribOut,Ah		;...then store attrib
 		Ret				;...and return
@@ -903,13 +903,13 @@ HWaitWrite3:
 HWaitWrite4:
 		In	Al,Dx			;Get status
 		Test	Al,1			;...gone back hi?
-		Jz	HWaitWrite4		;...Wait till it does
+		Jz	HWaitWrite4		;...wait till it does
 		Mov	Al,Bl			;Get char back
 		Stosb				;Write char only
 		Inc	Di			;...skip attribute
 		Loop	HWaitWrite3		;...and loop
 		Pop	Ds			;Restore Ds
-		Assume	Ds:BiosDataArea		;...and tell ASMB6
+		Assume	Ds:BiosDataArea		;...and tell ASM86
 		Ret				;...and return
 ReadWrite	Endp
 $Eject
@@ -1048,7 +1048,7 @@ OddFieldWrMed:
 		Inc	Di			;Bumpto next video position
 		Inc	Di			;...for repeat loop
 		Loop	RepeatWrMed		;Loop till Cx written
-		Pop	Ds			;estore data segment
+		Pop	Ds			;Restore data segment
 		Assume Ds:BiosDataArea		;Tell ASM86 data segment
 		Ret				;...then return
 
@@ -1079,13 +1079,13 @@ XorSkip:
 		Add	Di,80			;Increment to next row
 OddFieldWr:
 		Dec	Bh			;Decrement count
-		Jnz	HiResWrLoop		;...and loop till i char done
+		Jnz	HiResWrLoop		;...and loop till 1 char done
 		Pop	Si			;Restore pointers
 		Pop	Di			;...for next write
 		Inc	Di			;Bump to next video position
 		Loop	RepeatWrLoop		;Loop till Cx written
 		Pop	Ds			;Restore data segment
-		Assume	Ds:BiosDataArea		;Tell ASMB6 data segment
+		Assume	Ds:BiosDataArea		;Tell ASM86 data segment
 		Ret				;...then return
 WriteGraph	Endp
 $Eject
@@ -1134,7 +1134,7 @@ MedReadLp2:
 		Test	Ax,Cx			;Any bits set in pair?
 		Clc				;Prepare for no answer
 		Jz	ShiftBitsIn		;...jump if no
-		Stc				;...yes,set bit to shift in
+		Stc				;...yes, set bit to shift in
 ShiftBitsIn:
 		Rcl	Dl,1			;Shift bit into accumulator
 		Shr	Cx,1			;Move mask
@@ -1226,7 +1226,7 @@ ImageLoop:
 		Assume	Ds:IntSegment		;...to user Images
 		Les	Di,VideoGraphicsTrapAddr  ;User images at Es:Di
 		Mov	Bx,Es			;Test if Es:Di = 0
-		Or	Bx,Di			;...if 50,no images there
+		Or	Bx,Di			;...if so, no images there
 		Jz	NoMatch			;...jump if no match
 		Jmp	ImageTry2		;Jump and re-try images
 
@@ -1235,7 +1235,7 @@ MatchFound:
 		Mov	Char,Al			;Return in Char
 
 		Assume	Ds:BiosDataArea		;Tell ASM86 data segment
-		Pop	Ds			;Restore our seqment
+		Pop	Ds			;Restore our segment
 		Add	Sp,8			;Toss the temp area
 		Ret				;....and return
 ReadGraph	Endp
@@ -1249,7 +1249,7 @@ SetColor	Proc	Near			;Set color and background
 		Add	Dx,5			;...and then to palette
 		Mov	Al,CrtPalette		;Get the palette as it stands
 		Mov	Ah,ColorId
-		Or	Ah,Ah			;...Set Backgrowhl!
+		Or	Ah,Ah			;...Set background?
 		Mov	Ah,ColorValue		;Pre-load color value
 		Jnz	SetFore			;...jump if not
 
@@ -1281,7 +1281,7 @@ $Eject
 ;		***********************************
 
 WriteDot	Proc	Near			;Write a dot
-		Mov	Ax,VideoSegment		;yGet the segment value
+		Mov	Ax,VideoSegment		;Get the segment value
 		Mov	Es,Ax			;...into segment register
 		Mov	Dx,DotRow		;Get Row
 		Mov	Cx,DotCol		;...and column
@@ -1331,7 +1331,7 @@ $Eject
 ;		**********************************
 
 ReadDot		Proc	Near			;Read a dot
-		Mov	Ax,VideoSegment		;Get the seqment value
+		Mov	Ax,VideoSegment		;Get the segment value
 		Mov	Es,Ax			;...into segment register
 		Mov	Dx,DotRow		;Get Row
 		Mov	Cx,DotCol		;...and column
@@ -1342,7 +1342,7 @@ ReadDot		Proc	Near			;Read a dot
 		;	Read dot Hi Res
 
 		Shl	Al,Cl			;Shift dot to upper bit
-		Rol	Al,1			;...hen to lower bit
+		Rol	Al,1			;...then to lower bit
 		And	Al,00000001B		;Strip other dots
 		Jmp	Short RdDotReturn	;...and return
 
@@ -1402,7 +1402,7 @@ WriteTTY	Proc	Near			;Write glass tty
 
 BSHandler:
 		Cmp	Dl,0			;Left margin?
-		Je	SetCursAndReturn	;...if so,do nothing
+		Je	SetCursAndReturn	;...if so, do nothing
 		Dec	Dl			;...else backup
 		Jmp	Short SetCursAndReturn;...and return
 
@@ -1416,7 +1416,7 @@ BellHandler:
 		;	Carriage Return
 
 CRHandler:
-		Mov	Dl,0			;Coluan 0
+		Mov	Dl,0			;Column 0
 
 		;	Set cursor and return
 
@@ -1567,7 +1567,7 @@ CDEven:
 		Cmp	CrtMode,6		;HiRes?
 		Pushf				;...save result for return
 		Jne	CDLoRes			;...jump if not
-		Mov	Cx,0703H		;sMask &# of bits in byte - Hi
+		Mov	Cx,0703H		;Mask &# of bits in byte - Hi
 CdLoRes:
 		And	Ch,Dl			;Convert Ch to bit # in byte
 		Shr	Dx,Cl			;...then shift it out
@@ -1602,7 +1602,7 @@ Fetch6845Double Proc	Near
 		Mov	Ch,Al			;...it is half of word
 		Inc	Ah			;...Inc to next byte
 		Call	Fetch6845		;Get next byte from the 6845
-		Mov	Cl,Al			;...it is nent half of word
+		Mov	Cl,Al			;...it is next half of word
 		Ret				;...return with word value
 Fetch6845Double Endp
 

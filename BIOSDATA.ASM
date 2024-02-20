@@ -59,7 +59,7 @@ $Eject
 
 BiosDataArea	Segment Public
 RS232Base	Label Word
-RS2321Addr	Dw	1 Dup(?)		;Active RS232 Card f
+RS2321Addr	Dw	1 Dup(?)		;Active RS232 Card 1
 RS2322Addr	Dw	1 Dup(?)		;Active RS232 Card 2
 RS2323Addr	Dw	1 Dup(?)		;Active RS232 Card 3
 RS2324Addr	Dw	1 Dup(?)		;Active RSege Card 4
@@ -76,14 +76,14 @@ MemorySize	Dw	1 Dup(?)		;Memory size in K bytes
 MfgErrFlag	Db	1 Dup(?)		;Not used
 		Db	1 Dup(?)		;Not used
 KeyboardFlag1	Db	1 Dup(?)		;Keyboard
-KeyboardFlag2	Db	1 Dup(?)		;...Status
+KeyboardFlag2	Db	1 Dup(?)		;...status
 AltInput	Db	1 Dup(?)		;Keypad data
 KeyBufHead	Dw	1 Dup(?)		;Pointer to head of keyboard buffer
 KeyBufTail	Dw	1 Dup(?)		;Pointer to tail of keyboard buffer
 KeyBuffer	Db	31 Dup (?)	;Keyboard buffer area
 KeyBufEnd	Db	1 Dup(?)		;...and last byte of it
 SeekStatus	Db	1 Dup(?)		;Drives 0-3 recalibrate status
-MotorStatus	Db	1 Dup(?)		;Drives 0-3 sotor state
+MotorStatus	Db	1 Dup(?)		;Drives 0-3 motor state
 MotorCount	Db	1 Dup(?)		;Drive turn off counter
 DisketteStat	Db	1 Dup(?)		;Returned status byte
 FDCStatus	Db	7 Dup (?)	;765 status bytes storage
@@ -101,7 +101,7 @@ IOROMInit	Dw	1 Dup(?)		;Not used
 IOROMSegment	Dw	1 Dup(?)		;Not used
 IntrFlag	Db	1 Dup(?)		;Not used
 TimerLow	Dw	1 Dup(?)		;Timer
-TimerHigh	Dw	1 Dup(?)		;...Storage
+TimerHigh	Dw	1 Dup(?)		;...storage
 TimerOverflow	Db	1 Dup(?)		;Timer overflow flag
 BiosBreak	Db	1 Dup(?)		;If D7=1, break key hit
 ResetFlag	Dw	1 Dup(?)		;Set to 1234 after initialization

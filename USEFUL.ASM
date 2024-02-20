@@ -277,7 +277,7 @@ ROMCheckLoop:
 		Inc	Bx			;...inc it
 		Loop	ROMCheckLoop		;...and loop till all added
 		Or	Al,Al			;Affect Z flag with Al
-		Ret				;...and return,if z=1,ros=ok
+		Ret				;...and return, if z=1, rom=ok
 ROMCheck8k	Endp
 
 ;		****************************
@@ -306,10 +306,10 @@ TestAA:
 		Xor	Di,Di			;Re-load pointer
 		Mov	Cx,Bx			;Re-load count
 		Not	Al			;Next is 55H
-	Rep	Stosb				;Hrite it
+	Rep	Stosb				;Write it
 		Xor	Di,Di			;Re-load pointer
 		Mov	Cx,Bx			;Re-load count
-	Repe	Scasb				;Test memory with accu
+	Repe	Scasb				;Test memory with accum
 		Jcxz	Test01			;...jump if no error
 		Stc				;Carry set indicates error
 		Ret				;...return
